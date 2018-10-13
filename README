@@ -1,0 +1,52 @@
+c-shquote - POSIX Shell Compatible Argument Parser in Standard ISO-C11
+
+ABOUT:
+        The c-shquote project is a standalone implementation of POSIX Shell
+        compatible argumnet parsing written in Standard ISO-C11.
+
+        To use shquote, include c-shquote.h and link to the libcshquote.so
+        library. A pkg-config entry is provided as well.
+
+        For API documentation, see the c-shquote.h header file, as well as the
+        docbook comments for each function.
+
+DETAILS:
+        https://github.com/c-util/c-shquote/wiki
+
+BUG REPORTS:
+        https://github.com/c-util/c-shquote/issues
+
+GIT:
+        git@github.com:c-util/c-shquote.git
+        https://github.com/c-util/c-shquote.git
+
+GITWEB:
+        https://github.com/c-util/c-shquote
+
+LICENSE:
+        Apache Software License 2.0 (LICENSE)
+        See COPYING for details.
+
+REQUIREMENTS:
+        The requirements for c-shquote are:
+
+            libc (e.g., glibc >= 2.16)
+
+        At build-time, the following software is required:
+
+            meson >= 0.41
+            pkg-config >= 0.29
+
+INSTALL:
+        The meson build-system is used for c-shquote. Contact upstream
+        documentation for detailed help. In most situations the following
+        commands are sufficient to build and install c-shquote from source:
+
+            $ mkdir build
+            $ cd build
+            $ meson setup . ..
+            $ ninja
+            $ ninja test
+            # ninja install
+
+        No custom configuration options are available.

@@ -1,0 +1,4 @@
+LIBCSHQUOTE_1 {
+local:
+       *;
+};
