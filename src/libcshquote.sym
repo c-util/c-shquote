@@ -1,4 +1,9 @@
 LIBCSHQUOTE_1 {
+global:
+        c_shquote_quote;
+        c_shquote_unquote;
+        c_shquote_parse_next;
+        c_shquote_parse_argv;
 local:
        *;
 };

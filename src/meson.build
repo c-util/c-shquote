@@ -55,3 +55,11 @@ test('API Symbol Visibility', test_api)
 
 test_basic = executable('test-basic', ['test-basic.c'], link_with: libcshquote_private)
 test('Basic API Behavior', test_basic)
+
+test_private = executable('test-private', ['test-private.c'], link_with: libcshquote_private)
+test('Private Helper Functions', test_private)
+
+if use_reference_test
+        test_reference = executable('test-reference', ['test-reference.c'], link_with: libcshquote_private, dependencies: [ dep_glib ])
+        test('Reference Tests', test_reference)
+endif

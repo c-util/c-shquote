@@ -1,0 +1,1 @@
+option('reference-test', type: 'boolean', value: false, description: 'Run tests against reference implementation')
