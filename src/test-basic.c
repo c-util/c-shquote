@@ -12,7 +12,7 @@
 static void test_quote(void) {
         char buf[1024];
         char *out;
-        size_t n_out;;
+        size_t n_out;
         int r;
 
         out = NULL;
