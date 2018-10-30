@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * Standalone POSIX Shell Compatible Argument Parser in Standard ISO-C11
+ * POSIX Shell Compatible Argument Parser
  *
  * This library provides a argument parsing API, that is fully implemented in
  * ISO-C11 and has no external dependencies.
@@ -20,6 +20,8 @@ enum {
         C_SHQUOTE_E_NO_SPACE,
         C_SHQUOTE_E_BAD_QUOTING,
         C_SHQUOTE_E_EOF,
+
+        _C_SHQUOTE_E_N,
 };
 
 int c_shquote_quote(char **outp,

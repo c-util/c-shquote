@@ -2,13 +2,11 @@
  * Tests for glib and /bin/sh compatibility
  */
 
-#undef NDEBUG
 #include <assert.h>
 #include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "c-shquote.h"
 
 static void test_quote_one(const char *string) {

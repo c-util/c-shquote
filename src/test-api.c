@@ -4,12 +4,10 @@
  * shared library. Its sole purpose is to test for symbol availability.
  */
 
-#undef NDEBUG
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "c-shquote.h"
 
 static void test_api(void) {
@@ -20,6 +18,9 @@ static void test_api(void) {
         char **argv;
         size_t argc;
         int r;
+
+        assert(_C_SHQUOTE_E_SUCCESS == 0);
+        assert(_C_SHQUOTE_E_N > 0);
 
         r = c_shquote_quote(&out, &n_out, NULL, 0);
         assert(r == C_SHQUOTE_E_NO_SPACE);

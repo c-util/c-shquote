@@ -3,12 +3,10 @@
  * This test does some basic parsing operations and verifies their correctness.
  */
 
-#undef NDEBUG
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "c-shquote.h"
 
 static void test_quote(void) {

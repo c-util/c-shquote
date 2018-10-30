@@ -42,7 +42,7 @@ if not meson.is_subproject()
                 version: meson.project_version(),
                 name: 'libcshquote',
                 filebase: 'libcshquote',
-                description: 'Standalone POSIX Shell Argument Parser',
+                description: project_description,
         )
 endif
 
@@ -53,13 +53,13 @@ endif
 test_api = executable('test-api', ['test-api.c'], link_with: libcshquote_shared)
 test('API Symbol Visibility', test_api)
 
-test_basic = executable('test-basic', ['test-basic.c'], link_with: libcshquote_private)
+test_basic = executable('test-basic', ['test-basic.c'], dependencies: libcshquote_dep)
 test('Basic API Behavior', test_basic)
 
-test_private = executable('test-private', ['test-private.c'], link_with: libcshquote_private)
+test_private = executable('test-private', ['test-private.c'], dependencies: libcshquote_dep)
 test('Private Helper Functions', test_private)
 
 if use_reference_test
-        test_reference = executable('test-reference', ['test-reference.c'], link_with: libcshquote_private, dependencies: [ dep_glib ])
+        test_reference = executable('test-reference', ['test-reference.c'], dependencies: [ libcshquote_dep, dep_glib ])
         test('Reference Tests', test_reference)
 endif

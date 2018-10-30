@@ -1,5 +1,5 @@
 /*
- * POSIX Shell Argument Parsing
+ * POSIX Shell Compatible Argument Parser
  *
  * For highlevel documentation of the API see the header file and the docbook
  * comments.
@@ -13,8 +13,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "c-shquote-private.h"
 #include "c-shquote.h"
+#include "c-shquote-private.h"
 
 int c_shquote_append_str(char **outp,
                          size_t *n_outp,
@@ -80,13 +80,13 @@ int c_shquote_consume_char(char **outp,
 size_t c_shquote_strnspn(const char *string,
                         size_t n_string,
                         const char *accept) {
-        bool p[UCHAR_MAX] = {};
+        bool buffer[UCHAR_MAX] = {};
 
-        for (;*accept; ++accept)
-                p[(unsigned char)*accept] = true;
+        for ( ; *accept; ++accept)
+                buffer[(unsigned char)*accept] = true;
 
         for (size_t i = 0; i < n_string; ++i)
-                if (!p[(unsigned char)string[i]])
+                if (!buffer[(unsigned char)string[i]])
                         return i;
 
         return n_string;
@@ -95,7 +95,7 @@ size_t c_shquote_strnspn(const char *string,
 size_t c_shquote_strncspn(const char *string,
                           size_t n_string,
                           const char *reject) {
-        bool p[UCHAR_MAX] = {};
+        bool buffer[UCHAR_MAX] = {};
 
         if (strlen(reject) == 1) {
                 const char *p;
@@ -107,11 +107,11 @@ size_t c_shquote_strncspn(const char *string,
                         return p - string;
         }
 
-        for (;*reject;++reject)
-                p[(unsigned char)*reject] = true;
+        for ( ; *reject; ++reject)
+                buffer[(unsigned char)*reject] = true;
 
         for (size_t i = 0; i < n_string; ++i)
-                if (p[(unsigned char)string[i]])
+                if (buffer[(unsigned char)string[i]])
                         return i;
 
         return n_string;
@@ -123,9 +123,7 @@ void c_shquote_discard_comment(const char **inp,
 
         assert(**inp == '#');
 
-        /*
-         * Skip up-to, but excluding, the next newline.
-         */
+        /* Skip up-to, but excluding, the next newline. */
         len = c_shquote_strncspn(*inp, *n_inp, "\n");
         c_shquote_skip_str(inp, n_inp, len);
 }
@@ -134,9 +132,7 @@ void c_shquote_discard_whitespace(const char **inp,
                                   size_t *n_inp) {
         size_t len;
 
-        /*
-         * Skip until the next non-whitespace character.
-         */
+        /* Skip until the next non-whitespace character. */
         len = c_shquote_strnspn(*inp, *n_inp, " \t\n");
         c_shquote_skip_str(inp, n_inp, len);
 }

@@ -1,5 +1,16 @@
 #pragma once
 
+/*
+ * Private Definitions
+ *
+ * This file contains all internal definitions which are used across multiple
+ * sources. In most cases, we expose them here so we can write unit-tests.
+ */
+
+#include <stdint.h>
+#include <stdlib.h>
+#include "c-shquote.h"
+
 #define _public_ __attribute__((__visibility__("default")))
 
 int c_shquote_append_str(char **outp,

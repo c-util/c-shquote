@@ -2,15 +2,13 @@
  * Tests for private helper functions
  */
 
-#undef NDEBUG
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "c-shquote-private.h"
 #include "c-shquote.h"
+#include "c-shquote-private.h"
 
 static void test_append_str(void) {
         const char *string = "foo";
