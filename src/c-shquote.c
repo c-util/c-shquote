@@ -468,7 +468,7 @@ _public_ int c_shquote_parse_argv(char ***argvp,
                                   size_t *argcp,
                                   const char *input,
                                   size_t n_input) {
-        char buf[n_input];
+        char buf[n_input + 1];
         char *out = buf;
         size_t n_out = sizeof(buf);
         const char *in = input;
@@ -501,8 +501,8 @@ _public_ int c_shquote_parse_argv(char ***argvp,
         argv = malloc(sizeof(char*) * argc + n_out);
         if (!argv)
                 return -ENOMEM;
+        out = (char*)(argv + argc);
 
-        out = (char*)argv + (sizeof(char*) * argc);
         n_in = n_input;
         in = input;
 

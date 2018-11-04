@@ -109,6 +109,7 @@ static void test_parse(void) {
         test_parse_one("a\t\\\n''\"\"\nb");
         test_parse_one("#foobar foo");
         test_parse_one("foobar #foo");
+        test_parse_one("/usr/libexec/at-spi-bus-launcher");
 }
 
 int main(int argc, char *argv[]) {
