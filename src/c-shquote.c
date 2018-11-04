@@ -468,7 +468,8 @@ _public_ int c_shquote_parse_argv(char ***argvp,
                                   size_t *argcp,
                                   const char *input,
                                   size_t n_input) {
-        char buf[n_input];
+        /* Make sure we have enough room for the terminating '\0' */
+        char buf[n_input + 1];
         char *out = buf;
         size_t n_out = sizeof(buf);
         const char *in = input;
