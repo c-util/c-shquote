@@ -3,6 +3,10 @@
  *
  * For highlevel documentation of the API see the header file and the docbook
  * comments.
+ *
+ * The behavior of this implementation is described in the UNIX98 Spec in the
+ * section "Shell Command Language". Please read up on it before modifying the
+ * behavior of the quoting/unquoting functionality.
  */
 
 #include <assert.h>
@@ -284,6 +288,7 @@ int c_shquote_unquote_double(char **outp,
         }
 
         return C_SHQUOTE_E_BAD_QUOTING;
+
 out:
         *outp = out;
         *n_outp = n_out;
@@ -292,6 +297,30 @@ out:
         return 0;
 }
 
+/**
+ * c_shquote_quote() - Quote string
+ * @outp:               output buffer for quoted string
+ * @n_outp:             length of output buffer
+ * @in:                 input string
+ * @n_in:               length of input string
+ *
+ * This takes an input string and quotes it according to the POSIX Shell
+ * Quoting rules. The quoted string is written to @outp / @n_outp. The caller
+ * is responsible to allocate a suitably sized buffer. If C_SHQUOTE_E_NO_SPACE
+ * is returned, the caller should re-allocate a bigger buffer and retry the
+ * operation.
+ *
+ * There is no canonical quoting result, but every string can be quoted in
+ * several different ways. This function only ever uses single-quote quoting.
+ * This will not neccessarily produce optimal output, but it produces
+ * predictable and easy to parse results.
+ *
+ * On success, @outp and @n_outp are adjusted to specify the remaining output
+ * buffer and size.
+ *
+ * Return: 0 on success, negative error code on failure, C_SHQUOTE_E_NO_SPACE
+ *         if the output buffer is too small.
+ */
 _public_ int c_shquote_quote(char **outp,
                              size_t *n_outp,
                              const char *in,
@@ -299,6 +328,13 @@ _public_ int c_shquote_quote(char **outp,
         char *out = *outp;
         size_t n_out = *n_outp;
         int r;
+
+        /*
+         * We always prepend and append a single quote. This will not produce
+         * optimal output, but ensures we produce the same output as other
+         * implementations do. If optimal output is needed, we can always
+         * provide an alternative implementation.
+         */
 
         r = c_shquote_append_char(&out, &n_out, '\'');
         if (r)
@@ -336,6 +372,33 @@ _public_ int c_shquote_quote(char **outp,
         return 0;
 }
 
+/**
+ * c_shquote_unquote() - Unquote string
+ * @outp:               output buffer
+ * @n_outp:             length of output buffer
+ * @in:                 input string
+ * @n_in:               length of input string
+ *
+ * This unquotes the input string according to POSIX Shell Quoting rules. The
+ * unquoted string is written to the output buffer @outp, which the caller must
+ * pre-allocate. If C_SHQUOTE_E_NO_SPACE is returned, the caller must increase
+ * the buffer size and retry the operation.
+ *
+ * This function guarantees that the produced output will never be bigger than
+ * the given input. That is, if @n_outp is bigger than, or equal to, @n_in,
+ * then this function will *NEVER* return C_SHQUOTE_E_NO_SPACE.
+ *
+ * The unquote operation *ALWAYS* produces a canonical output string. That is,
+ * there is only one possible result of unquoting a given input string.
+ *
+ * On success, @outp and @n_outp are adjusted to specify the remaining output
+ * buffer and size.
+ *
+ * Return: 0 on success, negative error code on failure,
+ *         C_SHQUOTE_E_BAD_QUOTING if the input contains invalid quotes,
+ *         C_SHQUOTE_E_NO_SPACE if there is insufficient space in the output
+ *         buffer.
+ */
 _public_ int c_shquote_unquote(char **outp,
                                size_t *n_outp,
                                const char *in,
@@ -383,6 +446,35 @@ _public_ int c_shquote_unquote(char **outp,
         return 0;
 }
 
+/**
+ * c_shquote_parse_next() - Parse next argument
+ * @outp:               output buffer to place next token
+ * @n_outp:             length of the output buffer
+ * @inp:                input string
+ * @n_inp:              length of input string
+ *
+ * This parses the next argument of a concatenated argument string. That is, it
+ * takes a Shell Command Line and splits of the next token. If the end of the
+ * command line is reached, C_SHQUOTE_E_EOF is returned instead of the next
+ * token.
+ *
+ * On success, @outp and @n_outp are adjusted to point to the remaining output
+ * bufer, and @inp and @n_inp are adjusted to point to the remaining input
+ * buffer.
+ *
+ * The caller is responsible to allocate a suitable output buffer. If the
+ * output buffer is too small for the next element, C_SHQUOTE_E_NO_SPACE is
+ * returned and the caller should retry the operation with a bigger output
+ * buffer.
+ *
+ * Similarly to c_shquote_unquote(), the output is guaranteed to be shorter
+ * than, or equal in length to, the input.
+ *
+ * Return: 0 on success, negative error code on failure, C_SHQUOTE_E_EOF when
+ *         the end of the input string is reached without any further token,
+ *         C_SHQUOTE_E_BAD_QUOTING if the input is invalid,
+ *         C_SHQUOTE_E_NO_SPACE if the output buffer is too short.
+ */
 _public_ int c_shquote_parse_next(char **outp,
                                   size_t *n_outp,
                                   const char **inp,
@@ -464,6 +556,30 @@ out:
         return 0;
 }
 
+/**
+ * c_shquote_parse_argv() - Parse Shell Command-Line
+ * @argvp:              output array
+ * @argcp:              length of output array
+ * @input:              input string
+ * @n_input:            length of input string
+ *
+ * This parses a Shell Command-Line into an argument array. That is, it splits
+ * the input string according to POSIX Shell Command-Line rules, and returns
+ * the argument array in @argvp to the caller. This is similar to calling
+ * c_shquote_parse_next() in a loop and placing everything into a dynamically
+ * allocated argument array.
+ *
+ * On success, @argvp contains a pointer to an allocated string-array with all
+ * strings placed in a single buffer together with the array. That is, the
+ * caller is responsible to free(3) the pointer returned in @argvp when done.
+ * @argcp will contain the number of arguments that were put into the array.
+ *
+ * Note that the array in @argvp contains a safety NULL as last argument (not
+ * counted in @argcp).
+ *
+ * Return: 0 on success, negative error code on failure,
+ *         C_SHQUOTE_E_BAD_QUOTING if the input contains invalid quotes.
+ */
 _public_ int c_shquote_parse_argv(char ***argvp,
                                   size_t *argcp,
                                   const char *input,
@@ -478,8 +594,8 @@ _public_ int c_shquote_parse_argv(char ***argvp,
         int r;
 
         /*
-         * Verify the correctness of the input, and count the number
-         * of tokens in the output.
+         * Verify the correctness of the input, and count the number of tokens
+         * produced.
          */
         for (;;) {
                 r = c_shquote_parse_next(&out, &n_out, &in, &n_in);
