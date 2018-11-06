@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include "c-shquote.h"
 
+#define _cleanup_(_x) __attribute__((__cleanup__(_x)))
 #define _public_ __attribute__((__visibility__("default")))
 
 int c_shquote_append_str(char **outp,
@@ -60,3 +61,7 @@ int c_shquote_unquote_double(char **outp,
                              size_t *n_outp,
                              const char **inp,
                              size_t *n_inp);
+
+static inline void c_shquote_freep(void *p) {
+        free(*(void **)p);
+}
