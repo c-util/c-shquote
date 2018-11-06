@@ -580,8 +580,14 @@ out:
  * Note that the array in @argvp contains a safety NULL as last argument (not
  * counted in @argcp).
  *
+ * Since string-arrays rely on zero-terminated string, this function is not
+ * well-defined if the input string contains embedded NULL characters. Hence,
+ * the function will fail with C_SHQUOTE_E_CONTAINS_NULL in that case.
+ *
  * Return: 0 on success, negative error code on failure,
- *         C_SHQUOTE_E_BAD_QUOTING if the input contains invalid quotes.
+ *         C_SHQUOTE_E_BAD_QUOTING if the input contains invalid quotes,
+ *         C_SHQUOTE_E_CONTAINS_NULL if the input contains a literal embedded
+ *         NULL character.
  */
 _public_ int c_shquote_parse_argv(char ***argvp,
                                   size_t *argcp,
@@ -592,6 +598,9 @@ _public_ int c_shquote_parse_argv(char ***argvp,
         const char *in;
         char *out;
         int r;
+
+        if (memchr(input, '\0', n_input))
+                return C_SHQUOTE_E_CONTAINS_NULL;
 
         buffer = malloc(n_input + 1);
         if (!buffer)

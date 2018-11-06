@@ -19,6 +19,7 @@ enum {
         C_SHQUOTE_E_NO_SPACE,
         C_SHQUOTE_E_BAD_QUOTING,
         C_SHQUOTE_E_EOF,
+        C_SHQUOTE_E_CONTAINS_NULL,
 
         _C_SHQUOTE_E_N,
 };
