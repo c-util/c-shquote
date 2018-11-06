@@ -536,7 +536,9 @@ _public_ int c_shquote_parse_next(char **outp,
                          * Consume until the next escape character. If none
                          * exists, consume the rest of the string.
                          */
-                        len = c_shquote_strncspn(in, n_in, "\'\"\\# \t\n");
+                        len = c_shquote_strncspn(in, n_in, "'\"\\ \t\n#");
+                        assert(len > 0);
+
                         r = c_shquote_consume_str(&out, &n_out, &in, &n_in, len);
                         if (r)
                                 return r;
