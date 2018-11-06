@@ -587,14 +587,20 @@ _public_ int c_shquote_parse_argv(char ***argvp,
                                   size_t *argcp,
                                   const char *input,
                                   size_t n_input) {
-        char buf[n_input + 1];
-        char *out = buf;
-        size_t n_out = sizeof(buf);
-        const char *in = input;
-        size_t n_in = n_input;
-        size_t argc = 0;
-        char **argv;
+        _cleanup_(c_shquote_freep) char **argv = NULL, *buffer = NULL;
+        size_t i, n_in, n_out, argc = 0;
+        const char *in;
+        char *out;
         int r;
+
+        buffer = malloc(n_input + 1);
+        if (!buffer)
+                return -ENOMEM;
+
+        in = input;
+        out = buffer;
+        n_in = n_input;
+        n_out = n_input + 1;
 
         /*
          * Verify the correctness of the input, and count the number of tokens
@@ -606,38 +612,50 @@ _public_ int c_shquote_parse_argv(char ***argvp,
                         if (r == C_SHQUOTE_E_EOF)
                                 break;
 
+                        assert(r != C_SHQUOTE_E_NO_SPACE);
                         return r;
                 }
 
                 ++argc;
-                *out = '\0';
-                ++out;
-                --n_out;
+
+                /*
+                 * We put a terminating zero after each token, so we can point
+                 * to the tokens in the argument-array. Note that tokens must
+                 * be split with whitespace, so there must be enough space in
+                 * the pre-allocated output buffer.
+                 */
+                r = c_shquote_append_char(&out, &n_out, '\0');
+                assert(!r);
         }
 
-        n_out = out - buf;
+        /*
+         * We now know the number of arguments in the split command-line. We
+         * allocate a string-array to contain the array plus all the strings
+         * trailing. We also reserve +1 space in the array to place a safety
+         * terminating NULL.
+         */
+        n_out = out - buffer;
 
-        argv = malloc(sizeof(char*) * argc + n_out);
+        argv = malloc(sizeof(char *) * (argc + 1) + n_out);
         if (!argv)
                 return -ENOMEM;
-        out = (char*)(argv + argc);
 
-        n_in = n_input;
-        in = input;
+        out = (char *)(argv + argc + 1);
+        memcpy(out, buffer, n_out);
 
-        for (size_t i = 0; i < argc; ++i) {
+        /*
+         * We now have the argv-array pre-allocated and the tokenized strings
+         * in @out. All that is left is to traverse them and make the
+         * argv-array point to each string-start.
+         */
+        for (i = 0; i < argc; ++i) {
                 argv[i] = out;
-
-                r = c_shquote_parse_next(&out, &n_out, &in, &n_in);
-                if (r)
-                        return r;
-
-                *out = '\0';
-                ++out;
-                --n_out;
+                out += strlen(out) + 1;
         }
+        argv[i] = NULL;
 
         *argvp = argv;
         *argcp = argc;
+        argv = NULL;
         return 0;
 }
