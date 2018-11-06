@@ -483,7 +483,7 @@ _public_ int c_shquote_parse_next(char **outp,
         size_t n_out = *n_outp;
         const char *in = *inp;
         size_t n_in = *n_inp;
-        bool quoted = false;
+        bool got_output = false;
         int r;
 
         while (n_in > 0) {
@@ -495,34 +495,34 @@ _public_ int c_shquote_parse_next(char **outp,
                         if (r)
                                 return r;
 
-                        quoted = true;
-
+                        got_output = true;
                         break;
                 case '\"':
                         r = c_shquote_unquote_double(&out, &n_out, &in, &n_in);
                         if (r)
                                 return r;
 
-                        quoted = true;
-
+                        got_output = true;
                         break;
                 case '\\':
                         r = c_shquote_unescape_char_unquoted(&out, &n_out, &in, &n_in);
                         if (r)
                                 return r;
 
+                        if (n_out != *n_outp)
+                                got_output = true;
                         break;
                 case ' ':
                 case '\t':
                 case '\n':
                         c_shquote_discard_whitespace(&in, &n_in);
 
-                        if (n_out != *n_outp || quoted)
+                        if (got_output)
                                 goto out;
 
                         break;
                 case '#':
-                        if (n_out == *n_outp && !quoted) {
+                        if (!got_output) {
                                 c_shquote_discard_comment(&in, &n_in);
                         } else {
                                 r = c_shquote_consume_char(&out, &n_out, &in, &n_in);
@@ -543,12 +543,13 @@ _public_ int c_shquote_parse_next(char **outp,
                         if (r)
                                 return r;
 
+                        got_output = true;
                         break;
                 }
         }
 
 out:
-        if (n_out == *n_outp && !quoted)
+        if (!got_output)
                 return C_SHQUOTE_E_EOF;
 
         *outp = out;
