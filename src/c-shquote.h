@@ -12,7 +12,6 @@ extern "C" {
 #endif
 
 #include <stddef.h>
-#include <stdint.h>
 
 enum {
         _C_SHQUOTE_E_SUCCESS,
