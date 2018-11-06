@@ -7,12 +7,13 @@
  * sources. In most cases, we expose them here so we can write unit-tests.
  */
 
-#include <stdint.h>
 #include <stdlib.h>
 #include "c-shquote.h"
 
 #define _cleanup_(_x) __attribute__((__cleanup__(_x)))
 #define _public_ __attribute__((__visibility__("default")))
+
+/* string management */
 
 int c_shquote_append_str(char **outp,
                          size_t *n_outp,
@@ -41,6 +42,9 @@ size_t c_shquote_strnspn(const char *string,
 size_t c_shquote_strncspn(const char *string,
                           size_t n_string,
                           const char *reject);
+
+/* quoting */
+
 void c_shquote_discard_comment(const char **inp,
                                size_t *n_inp);
 void c_shquote_discard_whitespace(const char **inp,
@@ -61,6 +65,8 @@ int c_shquote_unquote_double(char **outp,
                              size_t *n_outp,
                              const char **inp,
                              size_t *n_inp);
+
+/* inline helpers */
 
 static inline void c_shquote_freep(void *p) {
         free(*(void **)p);

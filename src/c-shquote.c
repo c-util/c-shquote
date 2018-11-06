@@ -325,8 +325,8 @@ _public_ int c_shquote_quote(char **outp,
                              size_t *n_outp,
                              const char *in,
                              size_t n_in) {
-        char *out = *outp;
         size_t n_out = *n_outp;
+        char *out = *outp;
         int r;
 
         /*
@@ -403,8 +403,8 @@ _public_ int c_shquote_unquote(char **outp,
                                size_t *n_outp,
                                const char *in,
                                size_t n_in) {
-        char *out = *outp;
         size_t n_out = *n_outp;
+        char *out = *outp;
         int r;
 
         while (n_in > 0) {
@@ -479,10 +479,10 @@ _public_ int c_shquote_parse_next(char **outp,
                                   size_t *n_outp,
                                   const char **inp,
                                   size_t *n_inp) {
-        char *out = *outp;
-        size_t n_out = *n_outp;
         const char *in = *inp;
         size_t n_in = *n_inp;
+        char *out = *outp;
+        size_t n_out = *n_outp;
         bool got_output = false;
         int r;
 
