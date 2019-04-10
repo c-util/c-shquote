@@ -4,6 +4,10 @@
 
 libcshquote_symfile = join_paths(meson.current_source_dir(), 'libcshquote.sym')
 
+libcshquote_deps = [
+        dep_cstdaux,
+]
+
 libcshquote_private = static_library(
         'cshquote-private',
         [
@@ -13,12 +17,14 @@ libcshquote_private = static_library(
                 '-fvisibility=hidden',
                 '-fno-common',
         ],
+        dependencies: libcshquote_deps,
         pic: true,
 )
 
 libcshquote_shared = shared_library(
         'cshquote',
         objects: libcshquote_private.extract_all_objects(),
+        dependencies: libcshquote_deps,
         install: not meson.is_subproject(),
         soversion: 0,
         link_depends: libcshquote_symfile,
@@ -31,6 +37,7 @@ libcshquote_shared = shared_library(
 libcshquote_dep = declare_dependency(
         include_directories: include_directories('.'),
         link_with: libcshquote_private,
+        dependencies: libcshquote_deps,
         version: meson.project_version()
 )
 
