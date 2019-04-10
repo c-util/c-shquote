@@ -7,11 +7,9 @@
  * sources. In most cases, we expose them here so we can write unit-tests.
  */
 
+#include <c-stdaux.h>
 #include <stdlib.h>
 #include "c-shquote.h"
-
-#define _cleanup_(_x) __attribute__((__cleanup__(_x)))
-#define _public_ __attribute__((__visibility__("default")))
 
 /* string management */
 

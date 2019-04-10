@@ -2,7 +2,9 @@
  * Tests for glib and /bin/sh compatibility
  */
 
+#undef NDEBUG
 #include <assert.h>
+#include <c-stdaux.h>
 #include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,13 +19,13 @@ static void test_quote_one(const char *string) {
         int r;
 
         glib_string = g_shell_quote(string);
-        assert(glib_string);
+        c_assert(glib_string);
 
         r = c_shquote_quote(&out, &n_out, string, strlen(string));
-        assert(!r);
+        c_assert(!r);
 
-        assert(strlen(glib_string) == sizeof(c_string) - n_out);
-        assert(!strncmp(glib_string, c_string, strlen(glib_string)));
+        c_assert(strlen(glib_string) == sizeof(c_string) - n_out);
+        c_assert(!strncmp(glib_string, c_string, strlen(glib_string)));
 
         g_free(glib_string);
 }
@@ -40,13 +42,13 @@ static void test_unquote_one(const char *string) {
         r = c_shquote_unquote(&out, &n_out, string, strlen(string));
 
         if (r || !glib_string) {
-                assert(!glib_string);
-                assert(r == C_SHQUOTE_E_BAD_QUOTING);
-                assert(error->code == G_SHELL_ERROR_BAD_QUOTING);
+                c_assert(!glib_string);
+                c_assert(r == C_SHQUOTE_E_BAD_QUOTING);
+                c_assert(error->code == G_SHELL_ERROR_BAD_QUOTING);
                 g_error_free(error);
         } else {
-                assert(strlen(glib_string) == sizeof(c_string) - n_out);
-                assert(!strncmp(glib_string, c_string, strlen(glib_string)));
+                c_assert(strlen(glib_string) == sizeof(c_string) - n_out);
+                c_assert(!strncmp(glib_string, c_string, strlen(glib_string)));
 
                 g_free(glib_string);
         };
@@ -65,20 +67,20 @@ static void test_parse_one(const char *in) {
         r = c_shquote_parse_argv(&c_argv, &c_argc, in, strlen(in));
 
         if (r || !success) {
-                assert(!success);
+                c_assert(!success);
                 if (!r) {
-                        assert(c_argc == 0);
-                        assert(error->code == G_SHELL_ERROR_EMPTY_STRING);
+                        c_assert(c_argc == 0);
+                        c_assert(error->code == G_SHELL_ERROR_EMPTY_STRING);
                 } else {
-                        assert(r == C_SHQUOTE_E_BAD_QUOTING);
-                        assert(error->code == G_SHELL_ERROR_BAD_QUOTING);
+                        c_assert(r == C_SHQUOTE_E_BAD_QUOTING);
+                        c_assert(error->code == G_SHELL_ERROR_BAD_QUOTING);
                 }
                 g_error_free(error);
         } else {
-                assert(g_argc == c_argc);
+                c_assert(g_argc == c_argc);
 
                 for (int i = 0; i < g_argc; ++i)
-                        assert(!strcmp(g_argv[i], c_argv[i]));
+                        c_assert(!strcmp(g_argv[i], c_argv[i]));
 
                 free(c_argv);
                 g_strfreev(g_argv);

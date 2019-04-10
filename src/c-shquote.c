@@ -10,6 +10,7 @@
  */
 
 #include <assert.h>
+#include <c-stdaux.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdbool.h>
@@ -44,7 +45,7 @@ int c_shquote_append_char(char **outp,
 void c_shquote_skip_str(const char **strp,
                         size_t *n_strp,
                         size_t len) {
-        assert(len <= *n_strp);
+        c_assert(len <= *n_strp);
 
         *strp += len;
         *n_strp -= len;
@@ -125,7 +126,7 @@ void c_shquote_discard_comment(const char **inp,
                                size_t *n_inp) {
         size_t len;
 
-        assert(**inp == '#');
+        c_assert(**inp == '#');
 
         /* Skip up-to, but excluding, the next newline. */
         len = c_shquote_strncspn(*inp, *n_inp, "\n");
@@ -321,10 +322,10 @@ out:
  * Return: 0 on success, negative error code on failure, C_SHQUOTE_E_NO_SPACE
  *         if the output buffer is too small.
  */
-_public_ int c_shquote_quote(char **outp,
-                             size_t *n_outp,
-                             const char *in,
-                             size_t n_in) {
+_c_public_ int c_shquote_quote(char **outp,
+                               size_t *n_outp,
+                               const char *in,
+                               size_t n_in) {
         size_t n_out = *n_outp;
         char *out = *outp;
         int r;
@@ -399,10 +400,10 @@ _public_ int c_shquote_quote(char **outp,
  *         C_SHQUOTE_E_NO_SPACE if there is insufficient space in the output
  *         buffer.
  */
-_public_ int c_shquote_unquote(char **outp,
-                               size_t *n_outp,
-                               const char *in,
-                               size_t n_in) {
+_c_public_ int c_shquote_unquote(char **outp,
+                                 size_t *n_outp,
+                                 const char *in,
+                                 size_t n_in) {
         size_t n_out = *n_outp;
         char *out = *outp;
         int r;
@@ -475,10 +476,10 @@ _public_ int c_shquote_unquote(char **outp,
  *         C_SHQUOTE_E_BAD_QUOTING if the input is invalid,
  *         C_SHQUOTE_E_NO_SPACE if the output buffer is too short.
  */
-_public_ int c_shquote_parse_next(char **outp,
-                                  size_t *n_outp,
-                                  const char **inp,
-                                  size_t *n_inp) {
+_c_public_ int c_shquote_parse_next(char **outp,
+                                    size_t *n_outp,
+                                    const char **inp,
+                                    size_t *n_inp) {
         const char *in = *inp;
         size_t n_in = *n_inp;
         char *out = *outp;
@@ -537,7 +538,7 @@ _public_ int c_shquote_parse_next(char **outp,
                          * exists, consume the rest of the string.
                          */
                         len = c_shquote_strncspn(in, n_in, "'\"\\ \t\n#");
-                        assert(len > 0);
+                        c_assert(len > 0);
 
                         r = c_shquote_consume_str(&out, &n_out, &in, &n_in, len);
                         if (r)
@@ -589,11 +590,11 @@ out:
  *         C_SHQUOTE_E_CONTAINS_NULL if the input contains a literal embedded
  *         NULL character.
  */
-_public_ int c_shquote_parse_argv(char ***argvp,
-                                  size_t *argcp,
-                                  const char *input,
-                                  size_t n_input) {
-        _cleanup_(c_shquote_freep) char **argv = NULL, *buffer = NULL;
+_c_public_ int c_shquote_parse_argv(char ***argvp,
+                                    size_t *argcp,
+                                    const char *input,
+                                    size_t n_input) {
+        _c_cleanup_(c_shquote_freep) char **argv = NULL, *buffer = NULL;
         size_t i, n_in, n_out, argc = 0;
         const char *in;
         char *out;
@@ -621,7 +622,7 @@ _public_ int c_shquote_parse_argv(char ***argvp,
                         if (r == C_SHQUOTE_E_EOF)
                                 break;
 
-                        assert(r != C_SHQUOTE_E_NO_SPACE);
+                        c_assert(r != C_SHQUOTE_E_NO_SPACE);
                         return r;
                 }
 
@@ -634,7 +635,7 @@ _public_ int c_shquote_parse_argv(char ***argvp,
                  * the pre-allocated output buffer.
                  */
                 r = c_shquote_append_char(&out, &n_out, '\0');
-                assert(!r);
+                c_assert(!r);
         }
 
         /*
