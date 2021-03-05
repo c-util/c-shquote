@@ -114,7 +114,7 @@ static void test_parse(void) {
         test_parse_one("/usr/libexec/at-spi-bus-launcher");
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
         test_quote();
         test_unquote();
         test_parse();

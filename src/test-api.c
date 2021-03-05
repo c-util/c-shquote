@@ -41,7 +41,7 @@ static void test_api(void) {
         free(argv);
 }
 
-int main(int argc, char **argv) {
+int main(void) {
         test_api();
         return 0;
 }
