@@ -137,7 +137,7 @@ static void test_parse(void) {
         free(argv);
 }
 
-int main(int argc, char *argv[]) {
+int main(_c_unused_ int argc, _c_unused_ char *argv[]) {
         test_quote();
         test_unquote();
         test_reverse();

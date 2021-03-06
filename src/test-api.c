@@ -6,6 +6,7 @@
 
 #undef NDEBUG
 #include <assert.h>
+#include <c-stdaux.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,7 +42,7 @@ static void test_api(void) {
         free(argv);
 }
 
-int main(int argc, char **argv) {
+int main(_c_unused_ int argc, _c_unused_ char **argv) {
         test_api();
         return 0;
 }

@@ -57,7 +57,7 @@ endif
 # target: test-*
 #
 
-test_api = executable('test-api', ['test-api.c'], link_with: libcshquote_shared)
+test_api = executable('test-api', ['test-api.c'], link_with: libcshquote_shared, dependencies: dep_cstdaux)
 test('API Symbol Visibility', test_api)
 
 test_basic = executable('test-basic', ['test-basic.c'], dependencies: libcshquote_dep)

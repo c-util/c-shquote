@@ -380,7 +380,7 @@ static void test_unquote_double(void) {
         c_assert(!memcmp(buf, "fo\"obar", strlen(string) - 3));
 }
 
-int main(int argc, char *argv[]) {
+int main(_c_unused_ int argc, _c_unused_ char *argv[]) {
         test_append_str();
         test_append_char();
         test_skip_str();
