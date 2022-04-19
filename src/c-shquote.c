@@ -85,7 +85,7 @@ int c_shquote_consume_char(char **outp,
 size_t c_shquote_strnspn(const char *string,
                         size_t n_string,
                         const char *accept) {
-        bool buffer[UCHAR_MAX] = {};
+        bool buffer[UCHAR_MAX + 1] = {};
 
         for ( ; *accept; ++accept)
                 buffer[(unsigned char)*accept] = true;
@@ -100,7 +100,7 @@ size_t c_shquote_strnspn(const char *string,
 size_t c_shquote_strncspn(const char *string,
                           size_t n_string,
                           const char *reject) {
-        bool buffer[UCHAR_MAX] = {};
+        bool buffer[UCHAR_MAX + 1] = {};
 
         if (strlen(reject) == 1) {
                 const char *p;

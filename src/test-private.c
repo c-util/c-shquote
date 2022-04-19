@@ -148,6 +148,9 @@ static void test_strnspn(void) {
 
         len = c_shquote_strnspn("ab", 2, "bc");
         c_assert(len == 0);
+
+        len = c_shquote_strnspn("ab", 2, "\xff");
+        c_assert(len == 0);
 }
 
 static void test_strncspn(void) {
@@ -166,6 +169,9 @@ static void test_strncspn(void) {
         c_assert(len == 1);
 
         len = c_shquote_strncspn("ab", 2, "cd");
+        c_assert(len == 2);
+
+        len = c_shquote_strncspn("ab", 2, "\xff");
         c_assert(len == 2);
 }
 
