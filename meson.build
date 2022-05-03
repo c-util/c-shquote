@@ -1,20 +1,20 @@
 project(
         'c-shquote',
         'c',
-        version: '1',
-        license: 'Apache',
         default_options: [
                 'c_std=c11'
         ],
+        license: 'Apache',
+        meson_version: '>=0.60.0',
+        version: '1.0.0',
 )
+major = meson.project_version().split('.')[0]
 project_description = 'POSIX Shell Compatible Argument Parser'
 
-add_project_arguments('-D_GNU_SOURCE', language: 'c')
 mod_pkgconfig = import('pkgconfig')
 
-sub_cstdaux = subproject('c-stdaux')
-
-dep_cstdaux = sub_cstdaux.get_variable('libcstdaux_dep')
+dep_cstdaux = dependency('libcstdaux-1')
+add_project_arguments(dep_cstdaux.get_variable('cflags').split(' '), language: 'c')
 
 #
 # Config: compatability
@@ -25,3 +25,5 @@ if use_reference_test
 endif
 
 subdir('src')
+
+meson.override_dependency('libcshquote-'+major, libcshquote_dep, static: true)

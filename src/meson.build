@@ -8,8 +8,8 @@ libcshquote_deps = [
         dep_cstdaux,
 ]
 
-libcshquote_private = static_library(
-        'cshquote-private',
+libcshquote_both = both_libraries(
+        'cshquote-'+major,
         [
                 'c-shquote.c',
         ],
@@ -18,26 +18,19 @@ libcshquote_private = static_library(
                 '-fno-common',
         ],
         dependencies: libcshquote_deps,
-        pic: true,
-)
-
-libcshquote_shared = shared_library(
-        'cshquote',
-        objects: libcshquote_private.extract_all_objects(),
-        dependencies: libcshquote_deps,
         install: not meson.is_subproject(),
-        soversion: 0,
-        link_depends: libcshquote_symfile,
         link_args: [
                 '-Wl,--no-undefined',
                 '-Wl,--version-script=@0@'.format(libcshquote_symfile),
         ],
+        link_depends: libcshquote_symfile,
+        soversion: 0,
 )
 
 libcshquote_dep = declare_dependency(
-        include_directories: include_directories('.'),
-        link_with: libcshquote_private,
         dependencies: libcshquote_deps,
+        include_directories: include_directories('.'),
+        link_with: libcshquote_both.get_static_lib(),
         version: meson.project_version()
 )
 
@@ -45,11 +38,11 @@ if not meson.is_subproject()
         install_headers('c-shquote.h')
 
         mod_pkgconfig.generate(
-                libraries: libcshquote_shared,
-                version: meson.project_version(),
-                name: 'libcshquote',
-                filebase: 'libcshquote',
                 description: project_description,
+                filebase: 'libcshquote-'+major,
+                libraries: libcshquote_both.get_shared_lib(),
+                name: 'libcshquote',
+                version: meson.project_version(),
         )
 endif
 
@@ -57,7 +50,7 @@ endif
 # target: test-*
 #
 
-test_api = executable('test-api', ['test-api.c'], link_with: libcshquote_shared)
+test_api = executable('test-api', ['test-api.c'], link_with: libcshquote_both.get_shared_lib())
 test('API Symbol Visibility', test_api)
 
 test_basic = executable('test-basic', ['test-basic.c'], dependencies: libcshquote_dep)
