@@ -28,7 +28,7 @@ int c_shquote_append_str(char **outp,
         if (n_in > *n_outp)
                 return C_SHQUOTE_E_NO_SPACE;
 
-        memcpy(*outp, in, n_in);
+        c_memcpy(*outp, in, n_in);
 
         *outp += n_in;
         *n_outp -= n_in;
@@ -103,9 +103,10 @@ size_t c_shquote_strncspn(const char *string,
         bool buffer[UCHAR_MAX + 1] = {};
 
         if (strlen(reject) == 1) {
-                const char *p;
+                const char *p = NULL;
 
-                p = memchr(string, reject[0], n_string);
+                if (n_string > 0)
+                        p = memchr(string, reject[0], n_string);
                 if (!p)
                         return n_string;
                 else
@@ -600,7 +601,7 @@ _c_public_ int c_shquote_parse_argv(char ***argvp,
         char *out;
         int r;
 
-        if (memchr(input, '\0', n_input))
+        if (n_input > 0 && memchr(input, '\0', n_input))
                 return C_SHQUOTE_E_CONTAINS_NULL;
 
         buffer = malloc(n_input + 1);
@@ -651,7 +652,7 @@ _c_public_ int c_shquote_parse_argv(char ***argvp,
                 return -ENOMEM;
 
         out = (char *)(argv + argc + 1);
-        memcpy(out, buffer, n_out);
+        c_memcpy(out, buffer, n_out);
 
         /*
          * We now have the argv-array pre-allocated and the tokenized strings
