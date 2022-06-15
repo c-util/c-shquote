@@ -20,7 +20,6 @@ libcshquote_both = both_libraries(
         dependencies: libcshquote_deps,
         install: not meson.is_subproject(),
         link_args: [
-                '-Wl,--no-undefined',
                 '-Wl,--version-script=@0@'.format(libcshquote_symfile),
         ],
         link_depends: libcshquote_symfile,
