@@ -19,9 +19,9 @@ libcshquote_both = both_libraries(
         ],
         dependencies: libcshquote_deps,
         install: not meson.is_subproject(),
-        link_args: [
+        link_args: dep_cstdaux.get_variable('version-scripts') == 'yes' ? [
                 '-Wl,--version-script=@0@'.format(libcshquote_symfile),
-        ],
+        ] : [],
         link_depends: libcshquote_symfile,
         soversion: 0,
 )
