@@ -13,7 +13,7 @@ project_description = 'POSIX Shell Compatible Argument Parser'
 
 mod_pkgconfig = import('pkgconfig')
 
-dep_cstdaux = dependency('libcstdaux-1')
+dep_cstdaux = dependency('libcstdaux-1', version: '>=1.5.0')
 add_project_arguments(dep_cstdaux.get_variable('cflags').split(' '), language: 'c')
 
 #
